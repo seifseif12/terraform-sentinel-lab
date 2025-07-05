@@ -1,0 +1,14 @@
+import "tfplan/v2" as tfplan
+import "strings"
+
+main = rule {
+  all tfplan.resource_changes as rc {
+    rc.type is "aws_instance" and
+    rc.mode is "managed" and
+    "create" in rc.change.actions and
+    (
+      not "instance_type" in rc.change.after or
+      strings.lower(rc.change.after.instance_type) != "t3.micro"
+    )
+  }
+}
